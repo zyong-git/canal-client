@@ -1,6 +1,7 @@
 package top.javatool.canal.client.util;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -21,7 +22,7 @@ public class StringConvertUtil {
     }
 
     static Object convertType(Class<?> type, String columnValue) {
-        if (columnValue == null) {
+        if (StringUtils.isEmpty(columnValue)) {
             return null;
         } else if (type.equals(Integer.class)) {
             return Integer.parseInt(columnValue);
@@ -34,6 +35,28 @@ public class StringConvertUtil {
         } else if (type.equals(Double.class)) {
             return Double.parseDouble(columnValue);
         } else if (type.equals(Float.class)) {
+            return Float.parseFloat(columnValue);
+        } else if (type.equals(Date.class)) {
+            return parseDate(columnValue);
+        } else {
+            return type.equals(java.sql.Date.class) ? parseSqlDate(columnValue) : columnValue;
+        }
+    }
+
+    static Object convertBasicType(Class<?> type, String columnValue) {
+        if (StringUtils.isEmpty(columnValue)) {
+            return type.equals(int.class) || type.equals(long.class) || type.equals(double.class) || type.equals(float.class) ? 0 : null;
+        } else if (type.equals(Integer.class) || type.equals(int.class)) {
+            return Integer.parseInt(columnValue);
+        } else if (type.equals(Long.class) || type.equals(long.class)) {
+            return Long.parseLong(columnValue);
+        } else if (type.equals(Boolean.class)) {
+            return convertToBoolean(columnValue);
+        } else if (type.equals(BigDecimal.class)) {
+            return new BigDecimal(columnValue);
+        } else if (type.equals(Double.class) || type.equals(double.class)) {
+            return Double.parseDouble(columnValue);
+        } else if (type.equals(Float.class) || type.equals(float.class)) {
             return Float.parseFloat(columnValue);
         } else if (type.equals(Date.class)) {
             return parseDate(columnValue);
